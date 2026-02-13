@@ -40,6 +40,9 @@ export function selectNonRepeatingGame(games: SNESGame[]): SNESGame {
   const unseen = games.filter(g => !seen.has(g.id));
   const pool = unseen.length > 0 ? unseen : games;
   const picked = pool[Math.floor(Math.random() * pool.length)];
+  if (!picked) {
+    throw new Error('No games available');
+  }
   // If we had to reuse (no unseen left), reset the history to reduce repeats next time
   if (unseen.length === 0) {
     resetSeenGames();
@@ -69,6 +72,7 @@ async function fetchWikiExtract(title: string, fetchImpl: typeof fetch = fetch):
     const json = await resp.json();
     const pages = json?.query?.pages ?? {};
     const firstPageKey = Object.keys(pages)[0];
+    if (!firstPageKey) return null;
     const extract = pages[firstPageKey]?.extract as string | undefined;
     if (!extract) return null;
     return extract;
@@ -143,5 +147,9 @@ export async function fetchSNESGames(): Promise<SNESGame[]> {
 // Backwards-compatible function for older callers; prefer selectNonRepeatingGame
 export function selectRandomGame(games: SNESGame[]): SNESGame {
   const randomIndex = Math.floor(Math.random() * games.length);
-  return games[randomIndex];
+  const game = games[randomIndex];
+  if (!game) {
+    throw new Error('No games available');
+  }
+  return game;
 }
