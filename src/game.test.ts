@@ -55,7 +55,8 @@ describe('GameController', () => {
     });
 
     it('should reveal a new hint with each wrong guess up to 6', () => {
-      // Use a game with 7 hints to test all 6 wrong guesses
+      // Use a test game with 7 snippets to verify the logic works even if more hints exist
+      // In production, all games have exactly 6 snippets
       const gameWithManyHints: SNESGame = {
         id: '2',
         title: 'The Legend of Zelda',
@@ -90,7 +91,7 @@ describe('GameController', () => {
       controller.makeGuess('Wrong 5');
       expect(controller.getHints().length).toBe(6);
       
-      // The 6th wrong guess reveals the 7th hint
+      // The 6th wrong guess would reveal a 7th hint if available (game is now over)
       controller.makeGuess('Wrong 6');
       expect(controller.getHints().length).toBe(7);
     });
