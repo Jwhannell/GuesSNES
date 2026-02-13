@@ -15,8 +15,8 @@ describe('hints utilities', () => {
     const items = ['a', 'b', 'c', 'd'];
     const rng = makeStubRng([0.1, 0.9, 0.5, 0.2]);
     const shuffled = shuffleArray(items, rng);
-    // Deterministic expectation based on Fisher-Yates and stub RNG
-    expect(shuffled).toEqual(['d', 'b', 'c', 'a']);
+    // Deterministic expectation based on sort-based shuffle and stub RNG
+    expect(shuffled).toEqual(['a', 'd', 'c', 'b']);
     // Ensure original array not mutated
     expect(items).toEqual(['a', 'b', 'c', 'd']);
   });
