@@ -1,7 +1,7 @@
 export interface SNESGame {
   id: string;
   title: string;
-  reviewSnippet: string;
+  reviewSnippets: string[]; // Array of 6 review snippets from different reviews
 }
 
 export interface GameState {

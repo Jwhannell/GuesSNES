@@ -6,7 +6,14 @@ describe('GameController', () => {
   const mockGame: SNESGame = {
     id: '1',
     title: 'Super Mario World',
-    reviewSnippet: 'Super Mario World is an amazing platformer. It features incredible level design. The graphics are stunning for its time.'
+    reviewSnippets: [
+      'Super Mario World is an amazing platformer',
+      'It features incredible level design',
+      'The graphics are stunning for its time',
+      'Yoshi is a lovable companion',
+      'Secret exits add replay value',
+      'Boss battles are creative and fun'
+    ]
   };
 
   describe('Initial hint behavior', () => {
@@ -45,6 +52,48 @@ describe('GameController', () => {
       // After 2 wrong guesses - 3 hints
       controller.makeGuess('Another Wrong');
       expect(controller.getHints().length).toBe(3);
+    });
+
+    it('should reveal a new hint with each wrong guess up to 6', () => {
+      // Use a test game with 7 snippets to verify the logic works even if more hints exist
+      // In production, all games have exactly 6 snippets
+      const gameWithManyHints: SNESGame = {
+        id: '2',
+        title: 'The Legend of Zelda',
+        reviewSnippets: [
+          'The Legend of Zelda is an epic adventure',
+          'It features amazing dungeons',
+          'The combat is satisfying',
+          'The puzzles are clever',
+          'The music is iconic',
+          'The world is vast',
+          'The story is compelling'
+        ]
+      };
+      const controller = new GameController(gameWithManyHints);
+      
+      // Initial state - 1 hint
+      expect(controller.getHints().length).toBe(1);
+      
+      // Test all 6 wrong guesses - each should reveal a new hint
+      controller.makeGuess('Wrong 1');
+      expect(controller.getHints().length).toBe(2);
+      
+      controller.makeGuess('Wrong 2');
+      expect(controller.getHints().length).toBe(3);
+      
+      controller.makeGuess('Wrong 3');
+      expect(controller.getHints().length).toBe(4);
+      
+      controller.makeGuess('Wrong 4');
+      expect(controller.getHints().length).toBe(5);
+      
+      controller.makeGuess('Wrong 5');
+      expect(controller.getHints().length).toBe(6);
+      
+      // The 6th wrong guess would reveal a 7th hint if available (game is now over)
+      controller.makeGuess('Wrong 6');
+      expect(controller.getHints().length).toBe(7);
     });
 
     it('should maintain 6 remaining guesses at start', () => {

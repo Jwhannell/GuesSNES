@@ -34,9 +34,7 @@ export class GameController {
     }
     
     // Reveal one more hint after wrong guess
-    if (this.state.guesses.length < this.state.maxGuesses) {
-      this.state.hintsRevealed = this.state.guesses.length + 1;
-    }
+    this.state.hintsRevealed = this.state.guesses.length + 1;
     
     if (this.state.guesses.length >= this.state.maxGuesses) {
       this.state.gameStatus = 'lost';
@@ -47,16 +45,14 @@ export class GameController {
   
   getHints(): string[] {
     const hints: string[] = [];
-    const reviewText = this.state.targetGame.reviewSnippet;
+    const reviewSnippets = this.state.targetGame.reviewSnippets;
     
-    // Split review into sentences for progressive hints, handling various punctuation
-    const sentences = reviewText.split(/[.!?]+\s*/).filter(s => s.trim().length > 0);
-    
-    for (let i = 0; i < this.state.hintsRevealed && i < sentences.length; i++) {
-      const sentence = sentences[i]?.trim();
-      if (sentence) {
-        const censoredSentence = censorTitle(sentence, this.state.targetGame.title);
-        hints.push(censoredSentence);
+    // Use review snippets directly (one snippet per hint)
+    for (let i = 0; i < this.state.hintsRevealed && i < reviewSnippets.length; i++) {
+      const snippet = reviewSnippets[i];
+      if (snippet) {
+        const censoredSnippet = censorTitle(snippet, this.state.targetGame.title);
+        hints.push(censoredSnippet);
       }
     }
     
