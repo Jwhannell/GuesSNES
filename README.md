@@ -1,0 +1,2 @@
+# just-goofin
+vibe coding
