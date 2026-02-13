@@ -69,9 +69,9 @@ This project is configured to deploy to GitHub Pages. To set it up:
    - Click **Save**
 
 3. **Access your game**: After a few minutes, your game will be available at:
-   `https://jwhannell.github.io/just-goofin/`
+   `https://jwhannell.github.io/GuesSNES/`
 
-**Note**: The `dist/` folder is committed to the repository and includes a `.nojekyll` file to ensure proper deployment. The Vite configuration includes a base path of `/just-goofin/` to work correctly with GitHub Pages.
+**Note**: The `dist/` folder is committed to the repository and includes a `.nojekyll` file to ensure proper deployment. The Vite configuration includes a base path of `/GuesSNES/` to work correctly with GitHub Pages.
 
 ### Testing
 

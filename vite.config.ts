@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: './src',
-  base: '/just-goofin/',
+  base: '/GuesSNES/',
   build: {
     outDir: '../dist',
     emptyOutDir: true
