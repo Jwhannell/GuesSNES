@@ -49,8 +49,8 @@ export class GameController {
     const hints: string[] = [];
     const reviewText = this.state.targetGame.reviewSnippet;
     
-    // Split review into sentences for progressive hints
-    const sentences = reviewText.split(/[.!?]+/).filter(s => s.trim().length > 0);
+    // Split review into sentences for progressive hints, handling various punctuation
+    const sentences = reviewText.split(/[.!?]+\s*/).filter(s => s.trim().length > 0);
     
     for (let i = 0; i < this.state.hintsRevealed && i < sentences.length; i++) {
       const sentence = sentences[i].trim();

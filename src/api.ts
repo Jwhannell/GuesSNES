@@ -57,12 +57,9 @@ const mockGamesData: SNESGame[] = [
 // Fetch SNES games from GiantBomb API or return mock data on failure
 export async function fetchSNESGames(): Promise<SNESGame[]> {
   // In a real implementation, we would try to fetch from GiantBomb API
-  // For this version, we'll use the mock data with a simulated delay
+  // For this version, we return mock data immediately
   
   try {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
     // Could attempt real API call here with API key
     // const response = await fetch('https://www.giantbomb.com/api/games/...');
     // if (!response.ok) throw new Error('API failed');

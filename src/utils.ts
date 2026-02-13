@@ -1,18 +1,11 @@
 // Normalize text by converting to lowercase and removing non-alphanumeric characters
 export function normalizeGuess(input: string): string {
-  let normalized = '';
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i].toLowerCase();
-    if ((char >= 'a' && char <= 'z') || (char >= '0' && char <= '9')) {
-      normalized += char;
-    }
-  }
-  return normalized;
+  return input.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 // Censor words from title in the provided text, handling variants like plurals and possessives
 export function censorTitle(reviewText: string, gameTitle: string): string {
-  const titleWords = gameTitle.split(' ').filter(w => w.length > 1);
+  const titleWords = gameTitle.split(' ').filter(w => w.length >= 2);
   let censoredText = reviewText;
   
   for (const word of titleWords) {
