@@ -19,7 +19,8 @@ export function romanToArabic(token: string): number | null {
   let total = 0;
   let prev = 0;
   for (let i = roman.length - 1; i >= 0; i--) {
-    const char = roman[i];
+    // char is guaranteed to exist since i < roman.length
+    const char = roman[i]!;
     const value = ROMAN_MAP[char];
     if (!value) return null; // invalid character
     if (value < prev) {
@@ -106,21 +107,34 @@ export function similarityScore(a: string, b: string): number {
   const lenB = b.length;
   if (lenA === 0 && lenB === 0) return 1;
   if (lenA === 0 || lenB === 0) return 0;
-  const dp = Array.from({ length: lenA + 1 }, () => new Array(lenB + 1).fill(0));
-  for (let i = 0; i <= lenA; i++) dp[i][0] = i;
-  for (let j = 0; j <= lenB; j++) dp[0][j] = j;
-  for (let i = 1; i <= lenA; i++) {
-    for (let j = 1; j <= lenB; j++) {
-      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-      dp[i][j] = Math.min(
-        dp[i - 1][j] + 1, // deletion
-        dp[i][j - 1] + 1, // insertion
-        dp[i - 1][j - 1] + cost // substitution
-      );
+  
+  // Create matrix with explicit initialization
+  const matrix: number[][] = [];
+  for (let i = 0; i <= lenA; i++) {
+    const row: number[] = [];
+    matrix.push(row);
+    for (let j = 0; j <= lenB; j++) {
+      row.push(0);
     }
   }
-  const distance = dp[lenA][lenB];
-  return 1 - distance / Math.max(lenA, lenB);
+  
+  // Initialize edges - we know these exist from above initialization
+  for (let i = 0; i <= lenA; i++) matrix[i]![0] = i;
+  for (let j = 0; j <= lenB; j++) matrix[0]![j] = j;
+  
+  // Calculate distances - indices are guaranteed valid by loops
+  for (let i = 1; i <= lenA; i++) {
+    for (let j = 1; j <= lenB; j++) {
+      const substitutionCost = a[i - 1] === b[j - 1] ? 0 : 1;
+      const deletionDist = matrix[i - 1]![j]! + 1;
+      const insertionDist = matrix[i]![j - 1]! + 1;
+      const substitutionDist = matrix[i - 1]![j - 1]! + substitutionCost;
+      matrix[i]![j] = Math.min(deletionDist, insertionDist, substitutionDist);
+    }
+  }
+  
+  const finalDistance = matrix[lenA]![lenB]!;
+  return 1 - finalDistance / Math.max(lenA, lenB);
 }
 
 /**

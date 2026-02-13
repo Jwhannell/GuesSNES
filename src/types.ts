@@ -1,7 +1,7 @@
 export interface SNESGame {
   id: string;
   title: string;
-  reviewSnippets: string[]; // Array of 6 review snippets from different reviews
+  reviewSnippets?: string[]; // Hints fetched/generated at runtime; optional for test/fallback
 }
 
 export interface GameState {
@@ -10,4 +10,5 @@ export interface GameState {
   maxGuesses: number;
   gameStatus: 'playing' | 'won' | 'lost';
   hintsRevealed: number;
+  shuffledHints: string[]; // runtime hints (shuffled, deduped)
 }
