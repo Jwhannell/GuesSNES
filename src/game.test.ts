@@ -38,7 +38,7 @@ describe('GameController', () => {
       // Initial state - 1 hint
       expect(controller.getHints().length).toBe(1);
       
-      // After 1 wrong guess - still 1 hint (increments on line 38)
+      // After 1 wrong guess - still 1 hint
       controller.makeGuess('Wrong Game');
       expect(controller.getHints().length).toBe(1);
       
