@@ -19,8 +19,8 @@ export function romanToArabic(token: string): number | null {
   let total = 0;
   let prev = 0;
   for (let i = roman.length - 1; i >= 0; i--) {
-    const char = roman[i];
-    if (!char) return null; // Handle undefined char
+    // char is guaranteed to exist since i < roman.length
+    const char = roman[i]!;
     const value = ROMAN_MAP[char];
     if (!value) return null; // invalid character
     if (value < prev) {
