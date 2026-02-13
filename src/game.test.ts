@@ -116,6 +116,49 @@ describe('GameController', () => {
       expect(result).toBe(true);
       expect(controller.hasWon()).toBe(true);
     });
+
+    it('should accept partial title matches via fuzzy matching', () => {
+      const controller = new GameController(mockGame);
+      const result = controller.makeGuess('Mario World'); // omit "Super"
+      expect(result).toBe(true);
+      expect(controller.hasWon()).toBe(true);
+    });
+
+    it('should match roman numerals with arabic numerals (VII == 7)', () => {
+      const finalFantasyGame: SNESGame = {
+        id: 'ff6',
+        title: 'Final Fantasy VI',
+        reviewSnippets: [
+          'Final Fantasy VI redefined the JRPG genre on SNES',
+          'Opera scene remains iconic',
+          'Kefka is a terrifying villain',
+          'Esper system adds deep customization',
+          'World of Ruin changes everything',
+          'The soundtrack is unforgettable'
+        ]
+      };
+      const controller = new GameController(finalFantasyGame);
+      expect(controller.makeGuess('Final Fantasy 6')).toBe(true);
+      expect(controller.hasWon()).toBe(true);
+    });
+
+    it('should match arabic numerals with roman numerals (2 == II)', () => {
+      const sfGame: SNESGame = {
+        id: 'sf2',
+        title: 'Street Fighter II Turbo',
+        reviewSnippets: [
+          'Fast-paced fighting with tight controls',
+          'Turbo mode keeps matches exciting',
+          'Each fighter has unique moves',
+          'Special move execution is key',
+          'Tournament depth is incredible',
+          'Soundtrack is iconic'
+        ]
+      };
+      const controller = new GameController(sfGame);
+      expect(controller.makeGuess('Street Fighter 2 Turbo')).toBe(true);
+      expect(controller.hasWon()).toBe(true);
+    });
   });
 
   describe('Game losing condition', () => {

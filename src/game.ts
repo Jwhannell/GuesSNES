@@ -1,5 +1,5 @@
 import type { GameState, SNESGame } from './types';
-import { normalizeGuess, censorTitle } from './utils';
+import { censorTitle, areTitlesFuzzyMatch } from './utils';
 
 export class GameController {
   private state: GameState;
@@ -23,12 +23,9 @@ export class GameController {
       return false;
     }
     
-    const normalizedGuess = normalizeGuess(guess);
-    const normalizedTarget = normalizeGuess(this.state.targetGame.title);
-    
     this.state.guesses.push(guess);
     
-    if (normalizedGuess === normalizedTarget) {
+    if (areTitlesFuzzyMatch(guess, this.state.targetGame.title)) {
       this.state.gameStatus = 'won';
       return true;
     }

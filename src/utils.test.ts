@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeGuess, censorTitle } from './utils';
+import { normalizeGuess, censorTitle, areTitlesFuzzyMatch, romanToArabic, arabicToRoman } from './utils';
 
 describe('normalizeGuess', () => {
   it('should convert uppercase to lowercase', () => {
@@ -15,7 +15,12 @@ describe('normalizeGuess', () => {
   });
 
   it('should handle mixed case and symbols', () => {
-    expect(normalizeGuess('Street Fighter II: Turbo')).toBe('streetfighteriiturbo');
+    expect(normalizeGuess('Street Fighter II: Turbo')).toBe('streetfighter2turbo');
+  });
+
+  it('should normalize roman numerals to digits', () => {
+    expect(normalizeGuess('Final Fantasy VII')).toBe('finalfantasy7');
+    expect(normalizeGuess('Mega Man X')).toBe('megaman10'); // X = 10
   });
 
   it('should preserve numbers', () => {
@@ -24,6 +29,44 @@ describe('normalizeGuess', () => {
 
   it('should handle empty string', () => {
     expect(normalizeGuess('')).toBe('');
+  });
+});
+
+describe('roman numeral helpers', () => {
+  it('should convert roman numerals to arabic', () => {
+    expect(romanToArabic('ii')).toBe(2);
+    expect(romanToArabic('IV')).toBe(4);
+    expect(romanToArabic('xiv')).toBe(14);
+    expect(romanToArabic('MCMXCIV')).toBe(1994);
+  });
+
+  it('should convert arabic numerals to roman', () => {
+    expect(arabicToRoman(2)).toBe('II');
+    expect(arabicToRoman(4)).toBe('IV');
+    expect(arabicToRoman(14)).toBe('XIV');
+    expect(arabicToRoman(1994)).toBe('MCMXCIV');
+  });
+
+  it('should return null/empty for invalid roman tokens', () => {
+    expect(romanToArabic('foo')).toBeNull();
+    expect(arabicToRoman(-1)).toBe('');
+  });
+});
+
+describe('areTitlesFuzzyMatch', () => {
+  it('should match partial titles when tokens align', () => {
+    expect(areTitlesFuzzyMatch('Mario World', 'Super Mario World')).toBe(true);
+    expect(areTitlesFuzzyMatch('Link to the Past', 'The Legend of Zelda: A Link to the Past')).toBe(true);
+  });
+
+  it('should match roman numerals with arabic numerals', () => {
+    expect(areTitlesFuzzyMatch('Final Fantasy 7', 'Final Fantasy VII')).toBe(true);
+    expect(areTitlesFuzzyMatch('Final Fantasy VI', 'Final Fantasy 6')).toBe(true);
+    expect(areTitlesFuzzyMatch('Street Fighter 2 Turbo', 'Street Fighter II Turbo')).toBe(true);
+  });
+
+  it('should not match unrelated titles', () => {
+    expect(areTitlesFuzzyMatch('Metroid', 'Super Mario World')).toBe(false);
   });
 });
 
@@ -73,6 +116,16 @@ describe('censorTitle', () => {
   it('should handle titles with numbers', () => {
     const text = 'Final Fantasy 6 is the best';
     const result = censorTitle(text, 'Final Fantasy 6');
-    expect(result).toBe('_____ _______ 6 is the best');
+    expect(result).toBe('_____ _______ _ is the best'); // now censors the digit too
+  });
+
+  it('should cross-censor roman and arabic numerals in hints', () => {
+    const text = 'Final Fantasy 6 is the best';
+    const result = censorTitle(text, 'Final Fantasy VI');
+    expect(result).toBe('_____ _______ _ is the best');
+
+    const romanText = 'Street Fighter II Turbo is fast';
+    const romanResult = censorTitle(romanText, 'Street Fighter 2 Turbo');
+    expect(romanResult).toBe('______ _______ __ _____ is fast');
   });
 });
