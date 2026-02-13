@@ -58,20 +58,20 @@ npm run preview
 
 This project is configured to deploy to GitHub Pages. To set it up:
 
-1. **Build the project**: Run `npm run build` to create the production build in the `dist/` folder.
+1. **Build the project**: Run `npm run build` to create the production build in the `docs/` folder.
 
 2. **Enable GitHub Pages**:
    - Go to your repository settings on GitHub
    - Navigate to **Pages** in the left sidebar
    - Under **Source**, select **Deploy from a branch**
    - Under **Branch**, select the branch you want to deploy from (e.g., `main`)
-   - Set the folder to **`/ (root)`**
+   - Set the folder to **`/docs`**
    - Click **Save**
 
 3. **Access your game**: After a few minutes, your game will be available at:
    `https://<your-username>.github.io/GuesSNES/`
 
-**Note**: The `dist/` folder is committed to the repository and includes a `.nojekyll` file to ensure proper deployment. The Vite configuration includes a base path of `/GuesSNES/` to work correctly with GitHub Pages.
+**Note**: The `docs/` folder is committed to the repository and includes a `.nojekyll` file to ensure proper deployment. The Vite configuration includes a base path of `/GuesSNES/` to work correctly with GitHub Pages.
 
 ### Testing
 

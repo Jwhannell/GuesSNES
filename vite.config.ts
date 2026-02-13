@@ -4,7 +4,7 @@ export default defineConfig({
   root: './src',
   base: '/GuesSNES/',
   build: {
-    outDir: '../dist',
+    outDir: '../docs',
     emptyOutDir: true
   },
   test: {
