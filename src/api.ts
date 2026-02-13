@@ -5,52 +5,122 @@ const mockGamesData: SNESGame[] = [
   {
     id: '1',
     title: 'Super Mario World',
-    reviewSnippet: 'The plumber returns in this colorful platformer adventure filled with creative level design and catchy music. A true masterpiece that defined the console generation.'
+    reviewSnippets: [
+      'A colorful platformer adventure that perfected the Mario formula',
+      'Yoshi makes his debut as a lovable rideable companion',
+      'Secret exits and Star World provide incredible replay value',
+      'Cape Feather power-up adds exciting flight mechanics',
+      'Boss battles showcase creative and memorable designs',
+      'Each world presents unique themes and challenges'
+    ]
   },
   {
     id: '2',
     title: 'The Legend of Zelda: A Link to the Past',
-    reviewSnippet: 'An epic quest through dungeons and overworld that showcases brilliant puzzle design and memorable boss battles. This title raised the bar for action-adventure gaming.'
+    reviewSnippets: [
+      'An epic quest with brilliant dungeon and puzzle design',
+      'The Dark World mechanic effectively doubles the adventure',
+      'Master Sword feels tremendously rewarding to obtain',
+      'Environmental storytelling brings Hyrule to vibrant life',
+      'Boss encounters test both reflexes and problem-solving',
+      'The soundtrack remains iconic and emotionally resonant'
+    ]
   },
   {
     id: '3',
     title: 'Chrono Trigger',
-    reviewSnippet: 'Time travel mechanics blend seamlessly with turn-based combat and an emotionally resonant story. The soundtrack perfectly complements each era you visit.'
+    reviewSnippets: [
+      'Time travel mechanics blend seamlessly with turn-based combat',
+      'Multiple endings encourage repeated playthroughs and experimentation',
+      'Character combinations unlock devastating dual and triple techs',
+      'Beautiful art direction captures each time period perfectly',
+      'New Game Plus mode rewards mastery with fresh challenges',
+      'Emotionally resonant story with memorable character arcs'
+    ]
   },
   {
     id: '4',
     title: 'Final Fantasy VI',
-    reviewSnippet: 'A sprawling RPG with an ensemble cast and dramatic storyline. The opera house scene remains one of gaming\'s most memorable moments.'
+    reviewSnippets: [
+      'A sprawling RPG with an unforgettable ensemble cast',
+      'The opera house scene is gaming\'s most memorable moment',
+      'Kefka stands out as a truly menacing villain',
+      'Esper system provides deep character customization options',
+      'World of Ruin transforms the entire game experience',
+      'Magitek armor sequences deliver thrilling action breaks'
+    ]
   },
   {
     id: '5',
     title: 'Super Metroid',
-    reviewSnippet: 'Atmospheric exploration meets tight controls in this sci-fi adventure. The sense of isolation and discovery creates an unforgettable experience.'
+    reviewSnippets: [
+      'Atmospheric exploration with incredibly tight responsive controls',
+      'Sense of isolation creates an unforgettable oppressive mood',
+      'Power-ups fundamentally transform traversal and combat options',
+      'Map design encourages organic exploration and discovery',
+      'Boss encounters brilliantly test reflexes and strategy',
+      'Speedrunning potential has engaged fans for decades'
+    ]
   },
   {
     id: '6',
     title: 'Donkey Kong Country',
-    reviewSnippet: 'Pre-rendered graphics pushed technical boundaries while maintaining smooth gameplay. The mine cart levels deliver heart-pounding excitement.'
+    reviewSnippets: [
+      'Pre-rendered graphics pushed the SNES to its limits',
+      'Mine cart levels deliver heart-pounding excitement and thrills',
+      'Animal buddies add delightful variety to platforming',
+      'Hidden bonus rooms reward thorough exploration efforts',
+      'Difficulty curve perfectly balances accessibility with challenge',
+      'David Wise\'s soundtrack elevates every single moment'
+    ]
   },
   {
     id: '7',
     title: 'Street Fighter II Turbo',
-    reviewSnippet: 'Fast-paced fighting action with diverse characters and special moves. This version brought competitive multiplayer to living rooms worldwide.'
+    reviewSnippets: [
+      'Fast-paced fighting with diverse character roster and moves',
+      'Brought competitive multiplayer to living rooms worldwide',
+      'Each fighter has distinct playstyles and strategies',
+      'Special move execution demands precise timing and practice',
+      'Tournament play revealed incredible depth and complexity',
+      'Roster balance keeps matches exciting and unpredictable'
+    ]
   },
   {
     id: '8',
     title: 'Super Mario Kart',
-    reviewSnippet: 'Racing chaos ensues with power-ups and slippery banana peels. The battle mode provides endless fun with friends.'
+    reviewSnippets: [
+      'Racing chaos with creative power-ups and items',
+      'Battle mode provides endless fun with friends',
+      'Each character has unique handling characteristics',
+      'Track shortcuts reward skillful and daring driving',
+      'Rubber-banding AI keeps races exciting and competitive',
+      'Mode 7 graphics were revolutionary for console racing'
+    ]
   },
   {
     id: '9',
     title: 'Mega Man X',
-    reviewSnippet: 'Dashing and wall-jumping add new dimensions to classic run-and-gun gameplay. Boss battles reward skill and pattern recognition.'
+    reviewSnippets: [
+      'Dashing and wall-jumping modernize classic run-and-gun gameplay',
+      'Boss battles brilliantly reward pattern recognition and skill',
+      'Armor upgrades provide meaningful character progression',
+      'Tackle stages in any order promoting experimentation',
+      'Zero\'s appearance hints at exciting future possibilities',
+      'Challenging difficulty that respects player intelligence'
+    ]
   },
   {
     id: '10',
     title: 'Earthbound',
-    reviewSnippet: 'Quirky humor and modern setting differentiate this RPG from fantasy peers. The psychedelic final battle pushes hardware limits creatively.'
+    reviewSnippets: [
+      'Quirky humor differentiates this RPG from fantasy peers',
+      'Psychedelic final battle pushes hardware creatively',
+      'Contemporary American setting feels refreshingly unique',
+      'Battle system cleverly streamlines traditional RPG combat',
+      'Memorable characters populate the charming quirky world',
+      'Rolling HP counter adds strategic depth to healing'
+    ]
   }
 ];
 

@@ -6,7 +6,14 @@ describe('GameController', () => {
   const mockGame: SNESGame = {
     id: '1',
     title: 'Super Mario World',
-    reviewSnippet: 'Super Mario World is an amazing platformer. It features incredible level design. The graphics are stunning for its time.'
+    reviewSnippets: [
+      'Super Mario World is an amazing platformer',
+      'It features incredible level design',
+      'The graphics are stunning for its time',
+      'Yoshi is a lovable companion',
+      'Secret exits add replay value',
+      'Boss battles are creative and fun'
+    ]
   };
 
   describe('Initial hint behavior', () => {
@@ -48,11 +55,19 @@ describe('GameController', () => {
     });
 
     it('should reveal a new hint with each wrong guess up to 6', () => {
-      // Use a game with more sentences to test all 6 wrong guesses
+      // Use a game with 7 hints to test all 6 wrong guesses
       const gameWithManyHints: SNESGame = {
         id: '2',
         title: 'The Legend of Zelda',
-        reviewSnippet: 'The Legend of Zelda is an epic adventure. It features amazing dungeons. The combat is satisfying. The puzzles are clever. The music is iconic. The world is vast. The story is compelling.'
+        reviewSnippets: [
+          'The Legend of Zelda is an epic adventure',
+          'It features amazing dungeons',
+          'The combat is satisfying',
+          'The puzzles are clever',
+          'The music is iconic',
+          'The world is vast',
+          'The story is compelling'
+        ]
       };
       const controller = new GameController(gameWithManyHints);
       
