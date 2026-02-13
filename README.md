@@ -44,6 +44,35 @@ Build for production:
 npm run build
 ```
 
+The build output will be in the `dist/` directory.
+
+### Preview Production Build
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
+
+### Deploy to GitHub Pages
+
+This project is configured to deploy to GitHub Pages. To set it up:
+
+1. **Build the project**: Run `npm run build` to create the production build in the `dist/` folder.
+
+2. **Enable GitHub Pages**:
+   - Go to your repository settings on GitHub
+   - Navigate to **Pages** in the left sidebar
+   - Under **Source**, select **Deploy from a branch**
+   - Under **Branch**, select the branch you want to deploy from (e.g., `main`)
+   - Set the folder to **`/ (root)`**
+   - Click **Save**
+
+3. **Access your game**: After a few minutes, your game will be available at:
+   `https://jwhannell.github.io/just-goofin/`
+
+**Note**: The `dist/` folder is committed to the repository and includes a `.nojekyll` file to ensure proper deployment. The Vite configuration includes a base path of `/just-goofin/` to work correctly with GitHub Pages.
+
 ### Testing
 
 Run tests:
