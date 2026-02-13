@@ -55,10 +55,23 @@ export function arabicToRoman(num: number): string {
 }
 
 /**
+ * Minimal stopwords to avoid penalizing missing articles/prepositions in fuzzy matching
+ * (e.g., "Link to the Past" vs "The Legend of Zelda: A Link to the Past").
+ */
+const STOPWORDS = new Set([
+  'the', 'of', 'a', 'an', 'to', 'and', 'for', 'in', 'on', 'at', 'vs', 'vs.', 'with'
+]);
+
+type NormalizeOptions = {
+  dropStopwords?: boolean;
+};
+
+/**
  * Tokenize and normalize a title/guess for matching. Converts to lowercase,
  * strips punctuation, and normalizes roman numerals into digits where possible.
  */
-export function normalizeTitleTokens(input: string): string[] {
+export function normalizeTitleTokens(input: string, options: NormalizeOptions = {}): string[] {
+  const { dropStopwords = false } = options;
   return input
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, ' ') // normalize separators
@@ -71,13 +84,17 @@ export function normalizeTitleTokens(input: string): string[] {
       const romanValue = romanToArabic(token);
       if (romanValue !== null) return romanValue.toString();
       return token;
+    })
+    .filter(token => {
+      if (!dropStopwords) return true;
+      return !STOPWORDS.has(token);
     });
 }
 
 // Normalize text into a compact, comparable string. Keeps digits and
 // normalizes roman numerals into their digit equivalents.
 export function normalizeGuess(input: string): string {
-  return normalizeTitleTokens(input).join('');
+  return normalizeTitleTokens(input, { dropStopwords: false }).join('');
 }
 
 /**
@@ -109,9 +126,12 @@ export function similarityScore(a: string, b: string): number {
 /**
  * Fuzzy title matcher supporting:
  * - Exact normalized equality (spaces/punct removed)
- * - Token subset matching ("Mario World" vs "Super Mario World")
+ * - Token overlap matching with thresholds ("Mario World" vs "Super Mario World")
  * - Roman numeral <-> digit equivalence ("VII" == "7")
  * - Mild typo tolerance via similarity score
+ *
+ * Guardrails:
+ * - Single-token guesses aren’t enough for multi-token titles (e.g., "Mario" ≠ "Super Mario Kart")
  */
 export function areTitlesFuzzyMatch(guess: string, target: string): boolean {
   // Quick exact normalized check
@@ -119,31 +139,47 @@ export function areTitlesFuzzyMatch(guess: string, target: string): boolean {
   const normalizedTarget = normalizeGuess(target);
   if (normalizedGuess === normalizedTarget) return true;
 
-  const guessTokens = normalizeTitleTokens(guess);
-  const targetTokens = normalizeTitleTokens(target);
+  const guessTokens = normalizeTitleTokens(guess, { dropStopwords: true });
+  const targetTokens = normalizeTitleTokens(target, { dropStopwords: true });
   if (guessTokens.length === 0 || targetTokens.length === 0) return false;
 
-  // Token subset check: every token in guess appears somewhere in target
-  const targetTokenSet = new Set(targetTokens);
-  const significantGuessTokens = guessTokens.filter(token => token.length >= 2 || targetTokenSet.has(token));
-  if (
-    significantGuessTokens.length > 0 &&
-    significantGuessTokens.every(token => targetTokenSet.has(token))
-  ) {
+  const guessSet = new Set(guessTokens);
+  const targetSet = new Set(targetTokens);
+  let common = 0;
+  for (const token of guessSet) {
+    if (targetSet.has(token)) common++;
+  }
+
+  const guessCoverage = common / guessSet.size; // fraction of guess tokens matched
+  const targetCoverage = common / targetSet.size; // fraction of target tokens covered
+  const minCommonTokens = common;
+
+  // Require at least two matching tokens for multi-token titles. Allow one for single-token titles.
+  const targetIsSingleToken = targetSet.size === 1;
+  const requiredCommon = targetIsSingleToken ? 1 : 2;
+
+  // Guardrail: ensure the guess contains the target's final token (after stopword removal).
+  const targetTailToken = targetTokens[targetTokens.length - 1];
+  const hasTailToken = targetIsSingleToken || (targetTailToken ? guessSet.has(targetTailToken) : false);
+
+  // Coverage thresholds: allow partial titles but ensure meaningful overlap.
+  // Using stopword-trimmed tokens keeps "Link to the Past" working (~0.5 coverage).
+  const meetsCoverage = guessCoverage >= 0.6 && targetCoverage >= 0.5;
+
+  if (hasTailToken && minCommonTokens >= requiredCommon && meetsCoverage) {
     return true;
   }
 
-  // Substring check on concatenated canonical forms (helps when user omits words)
-  if (
-    normalizedGuess.length >= 3 &&
-    (normalizedTarget.includes(normalizedGuess) || normalizedGuess.includes(normalizedTarget))
-  ) {
-    return true;
+  // Remove overly permissive substring check to avoid cases like "Mario" matching "Super Mario Kart".
+  // Keep typo tolerance as a last resort when lengths are similar (avoid tiny guesses matching long titles).
+  if (normalizedGuess.length >= 5) {
+    const score = similarityScore(normalizedGuess, normalizedTarget);
+    if (score >= 0.8 && normalizedGuess.length >= normalizedTarget.length * 0.5) {
+      return true;
+    }
   }
 
-  // Mild typo tolerance fallback
-  const score = similarityScore(normalizedGuess, normalizedTarget);
-  return score >= 0.8; // tweak threshold if needed
+  return false;
 }
 
 // --- Title censoring ----------------------------------------------------------

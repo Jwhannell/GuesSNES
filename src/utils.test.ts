@@ -65,6 +65,20 @@ describe('areTitlesFuzzyMatch', () => {
     expect(areTitlesFuzzyMatch('Street Fighter 2 Turbo', 'Street Fighter II Turbo')).toBe(true);
   });
 
+  it('should enforce meaningful overlap for partial titles', () => {
+    // Still acceptable partials
+    expect(areTitlesFuzzyMatch('Mario World', 'Super Mario World')).toBe(true);
+    expect(areTitlesFuzzyMatch('Link to the Past', 'The Legend of Zelda: A Link to the Past')).toBe(true);
+    expect(areTitlesFuzzyMatch('Mario Kart', 'Super Mario Kart')).toBe(true);
+
+    // Too short / too vague
+    expect(areTitlesFuzzyMatch('Mario', 'Super Mario Kart')).toBe(false);
+    expect(areTitlesFuzzyMatch('Super', 'Super Mario Kart')).toBe(false);
+    expect(areTitlesFuzzyMatch('Kart', 'Super Mario Kart')).toBe(false);
+    // Missing the distinctive tail token (Kart)
+    expect(areTitlesFuzzyMatch('Super Mario', 'Super Mario Kart')).toBe(false);
+  });
+
   it('should not match unrelated titles', () => {
     expect(areTitlesFuzzyMatch('Metroid', 'Super Mario World')).toBe(false);
   });

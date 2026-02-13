@@ -159,6 +159,64 @@ describe('GameController', () => {
       expect(controller.makeGuess('Street Fighter 2 Turbo')).toBe(true);
       expect(controller.hasWon()).toBe(true);
     });
+
+    it('should allow meaningful partials but reject overly vague guesses', () => {
+      const marioKart: SNESGame = {
+        id: 'mk1',
+        title: 'Super Mario Kart',
+        reviewSnippets: [
+          'Mode 7 racing at its finest',
+          'Battle mode defined friendships and rivalries',
+          'Kart drifting demands skill',
+          'Items keep races chaotic',
+          'Iconic Rainbow Road challenges players',
+          'Rubber-banding AI keeps races tight'
+        ]
+      };
+      const controller = new GameController(marioKart);
+
+      // Acceptable partial guesses
+      expect(controller.makeGuess('Mario Kart')).toBe(true);
+      expect(controller.hasWon()).toBe(true);
+    });
+
+    it('should NOT accept single-token guesses for multi-word titles', () => {
+      const marioKart: SNESGame = {
+        id: 'mk1',
+        title: 'Super Mario Kart',
+        reviewSnippets: [
+          'Mode 7 racing at its finest',
+          'Battle mode defined friendships and rivalries',
+          'Kart drifting demands skill',
+          'Items keep races chaotic',
+          'Iconic Rainbow Road challenges players',
+          'Rubber-banding AI keeps races tight'
+        ]
+      };
+      const controller = new GameController(marioKart);
+      expect(controller.makeGuess('Mario')).toBe(false);
+      expect(controller.hasWon()).toBe(false);
+      expect(controller.getHints().length).toBe(2); // wrong guess revealed another hint
+    });
+
+    it('should also reject partials missing the distinctive tail token', () => {
+      const marioKart: SNESGame = {
+        id: 'mk1',
+        title: 'Super Mario Kart',
+        reviewSnippets: [
+          'Mode 7 racing at its finest',
+          'Battle mode defined friendships and rivalries',
+          'Kart drifting demands skill',
+          'Items keep races chaotic',
+          'Iconic Rainbow Road challenges players',
+          'Rubber-banding AI keeps races tight'
+        ]
+      };
+      const controller = new GameController(marioKart);
+      expect(controller.makeGuess('Super Mario')).toBe(false);
+      expect(controller.hasWon()).toBe(false);
+      expect(controller.getHints().length).toBe(2);
+    });
   });
 
   describe('Game losing condition', () => {
