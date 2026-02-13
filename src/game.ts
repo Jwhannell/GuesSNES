@@ -35,7 +35,7 @@ export class GameController {
     
     // Reveal one more hint after wrong guess
     if (this.state.guesses.length < this.state.maxGuesses) {
-      this.state.hintsRevealed = this.state.guesses.length;
+      this.state.hintsRevealed = this.state.guesses.length + 1;
     }
     
     if (this.state.guesses.length >= this.state.maxGuesses) {

@@ -38,13 +38,13 @@ describe('GameController', () => {
       // Initial state - 1 hint
       expect(controller.getHints().length).toBe(1);
       
-      // After 1 wrong guess - still 1 hint
+      // After 1 wrong guess - 2 hints
       controller.makeGuess('Wrong Game');
-      expect(controller.getHints().length).toBe(1);
-      
-      // After 2 wrong guesses - 2 hints
-      controller.makeGuess('Another Wrong');
       expect(controller.getHints().length).toBe(2);
+      
+      // After 2 wrong guesses - 3 hints
+      controller.makeGuess('Another Wrong');
+      expect(controller.getHints().length).toBe(3);
     });
 
     it('should maintain 6 remaining guesses at start', () => {
