@@ -5,11 +5,12 @@ A Wordle-like web game where players guess a random SNES game title in 6 tries!
 ## Features
 
 - 🎯 Guess SNES game titles in 6 attempts
-- 💡 Progressive hint system that reveals censored review snippets after each wrong guess
-- 🔤 Smart text normalization (case-insensitive, punctuation-ignored)
-- 🚫 Intelligent word censoring that handles plurals and possessive forms
+- 💡 Progressive hint system that fetches and shuffles **fresh hints per game** (no repeats)
+- 🔤 Smart text normalization (case-insensitive, punctuation-ignored) with **roman ↔ arabic numeral equivalence**
+- 🤝 Fuzzy title matching with token coverage thresholds (e.g., `Mario Kart` ok, but not just `Mario`)
+- 🚫 Intelligent word censoring that handles plurals, possessives, and numeral variants
 - 🎨 Clean, polished UI with gradient background
-- 📦 No database required - uses runtime API fetching with graceful fallback to mock data
+- 📦 No database required - uses runtime API fetching with graceful fallback when offline
 - ✅ Comprehensive test coverage for core logic
 
 ## Getting Started
@@ -79,9 +80,13 @@ npm run test:watch
 - `normalizeGuess()` - Normalizes user input by removing punctuation, spaces, and converting to lowercase
 - `censorTitle()` - Censors game title words in review text, handling variants like plurals (`-s`, `-es`) and possessives (`'s`, `s'`)
 
-## Game Data
+## Game Data & No-Repeats
 
-The game attempts to fetch SNES titles and review snippets from public APIs (like GiantBomb) at runtime. If the API is unavailable, it gracefully falls back to a curated set of 10 classic SNES games with hand-written review snippets.
+- 🎲 Games are selected via `selectNonRepeatingGame`, which persists a `seenGameIds` set in `localStorage` to avoid repeats across refreshes.
+- 🧠 Hints are fetched/generated at runtime using `fetchHintsForGame` (Wikipedia extracts + sentence splitting) with a persistent `usedHintHashes` set to ensure **no hint repeats**, even for the same game. Hints are also **shuffled per game instance** so the order changes every time.
+- 🔌 Fallback: if the Wikipedia call fails, we still generate hint sentences on the fly (no static arrays anymore), then dedupe/shuffle them before display.
+- 🧼 Title words are censored via `censorTitle`, including numeric/roman variants (e.g., `6` ↔ `VI`).
+- 🧪 Debug helper: in the browser console, run `resetHintHistory()` to clear stored `seenGameIds`/`usedHintHashes` during development.
 
 ## License
 

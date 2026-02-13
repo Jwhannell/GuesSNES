@@ -1,21 +1,28 @@
 import type { GameState, SNESGame } from './types';
 import { censorTitle, areTitlesFuzzyMatch } from './utils';
+import { shuffleArray } from './hints';
 
 export class GameController {
   private state: GameState;
   
-  constructor(targetGame: SNESGame) {
+  constructor(targetGame: SNESGame, opts?: { rng?: () => number }) {
+    const { rng = Math.random } = opts || {};
+    const hints = targetGame.reviewSnippets ?? [];
+    // Shuffle once per game to ensure hint order varies, even for same game
+    const shuffledHints = shuffleArray(hints, rng);
+
     this.state = {
       targetGame,
       guesses: [],
       maxGuesses: 6,
       gameStatus: 'playing',
-      hintsRevealed: 1
+      hintsRevealed: 1,
+      shuffledHints,
     };
   }
   
   getState(): GameState {
-    return { ...this.state };
+    return { ...this.state, shuffledHints: [...this.state.shuffledHints] };
   }
   
   makeGuess(guess: string): boolean {
@@ -42,9 +49,8 @@ export class GameController {
   
   getHints(): string[] {
     const hints: string[] = [];
-    const reviewSnippets = this.state.targetGame.reviewSnippets;
+    const reviewSnippets = this.state.shuffledHints;
     
-    // Use review snippets directly (one snippet per hint)
     for (let i = 0; i < this.state.hintsRevealed && i < reviewSnippets.length; i++) {
       const snippet = reviewSnippets[i];
       if (snippet) {

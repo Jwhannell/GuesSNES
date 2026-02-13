@@ -16,25 +16,51 @@ describe('GameController', () => {
     ]
   };
 
+  const makeStubRng = (sequence: number[]) => {
+    let idx = 0;
+    return () => {
+      const value = sequence[idx % sequence.length];
+      idx += 1;
+      return value;
+    };
+  };
+
   describe('Initial hint behavior', () => {
     it('should start with 1 hint revealed', () => {
       const controller = new GameController(mockGame);
       const state = controller.getState();
       expect(state.hintsRevealed).toBe(1);
+      expect(state.shuffledHints.length).toBe(mockGame.reviewSnippets.length);
+    });
+
+    it('should shuffle hint order per game instance', () => {
+      const rngA = makeStubRng([0.1, 0.9, 0.3, 0.7]);
+      const rngB = makeStubRng([0.9, 0.1, 0.8, 0.2]);
+      const controllerA = new GameController(mockGame, { rng: rngA });
+      const controllerB = new GameController(mockGame, { rng: rngB });
+      const hintsA = controllerA.getState().shuffledHints;
+      const hintsB = controllerB.getState().shuffledHints;
+      expect(hintsA).not.toEqual(hintsB);
     });
 
     it('should show one hint before any guesses', () => {
       const controller = new GameController(mockGame);
       const hints = controller.getHints();
       expect(hints.length).toBe(1);
-      expect(hints[0]).toContain('is an amazing platformer');
+      // Because hints are shuffled, just ensure it came from the provided pool
+      const pool = new Set(mockGame.reviewSnippets);
+      const unmasked = hints[0].replace(/_/g, '');
+      expect(Array.from(pool).some(h => unmasked.includes(h.slice(0, 10).trim()))).toBe(true);
     });
 
-    it('should censor the game title in the initial hint', () => {
-      const controller = new GameController(mockGame);
+    it('should censor the game title in the initial hint (if present)', () => {
+      const controller = new GameController(mockGame, { rng: () => 0 });
       const hints = controller.getHints();
-      expect(hints[0]).not.toContain('Super Mario World');
-      expect(hints[0]).toContain('_____');
+      const lowered = hints[0].toLowerCase();
+      // Ensure no raw title words leak through, even if the selected hint didn’t contain the full title
+      ['super', 'mario', 'world'].forEach(word => {
+        expect(lowered.includes(word)).toBe(false);
+      });
     });
   });
 

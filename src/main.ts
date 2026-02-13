@@ -1,18 +1,45 @@
-import { fetchSNESGames, selectRandomGame } from './api';
+import { fetchSNESGames, selectNonRepeatingGame, fetchHintsForGame, resetSeenGames, resetUsedHints } from './api';
 import { GameController } from './game';
 
 let gameController: GameController | null = null;
+
+function renderLoading(message = 'Loading a new game...'): void {
+  const appElement = document.getElementById('app');
+  if (!appElement) return;
+  appElement.innerHTML = `<div class="loading"><p>${message}</p></div>`;
+}
 
 // Initialize the game
 async function initGame() {
   const appElement = document.getElementById('app');
   if (!appElement) return;
   
+  renderLoading();
+  
   try {
     const games = await fetchSNESGames();
-    const randomGame = selectRandomGame(games);
-    gameController = new GameController(randomGame);
-    
+    let pickedGame = selectNonRepeatingGame(games);
+    let hints: string[] = [];
+
+    // Try multiple times to get a game with fresh hints (no repeats)
+    const maxAttempts = Math.min(games.length, 5);
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        hints = await fetchHintsForGame(pickedGame);
+        if (hints.length > 0) break;
+      } catch (err) {
+        // Try another game if no new hints are available for this one
+        pickedGame = selectNonRepeatingGame(games);
+      }
+    }
+
+    if (!hints || hints.length === 0) {
+      throw new Error('Could not fetch fresh hints for any game');
+    }
+
+    pickedGame.reviewSnippets = hints;
+
+    gameController = new GameController(pickedGame);
     renderGame();
   } catch (error) {
     appElement.innerHTML = '<div class="loading"><p>Failed to load game. Please refresh.</p></div>';
@@ -134,6 +161,18 @@ function renderGame() {
     }
   }
 }
+
+// Debug/test helper: allow manual resets of history (non-production convenience)
+// @ts-expect-error attach to window for quick access
+globalThis.resetHintHistory = () => {
+  try {
+    resetSeenGames();
+    resetUsedHints();
+    console.info('Hint/game history cleared.');
+  } catch (err) {
+    console.warn('Failed to reset history', err);
+  }
+};
 
 // Start the game when page loads
 initGame();
