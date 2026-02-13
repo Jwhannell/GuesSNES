@@ -75,7 +75,7 @@ describe('GameController', () => {
       controller.makeGuess('Wrong 5');
       expect(controller.getHints().length).toBe(6);
       
-      // This should reveal the 7th hint, but currently doesn't due to the bug
+      // The 6th wrong guess reveals the 7th hint
       controller.makeGuess('Wrong 6');
       expect(controller.getHints().length).toBe(7);
     });
