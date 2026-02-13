@@ -49,7 +49,7 @@ function renderGame() {
   html += '<div class="hints-section">';
   html += '<div class="hints-title">📝 Hints:</div>';
   if (hints.length === 0) {
-    html += '<div class="no-hints">Make a guess to reveal hints!</div>';
+    html += '<div class="no-hints">No hints available yet.</div>';
   } else {
     hints.forEach((hint, index) => {
       html += `<div class="hint">${index + 1}. ${hint}</div>`;

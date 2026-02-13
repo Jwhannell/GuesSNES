@@ -10,7 +10,7 @@ export class GameController {
       guesses: [],
       maxGuesses: 6,
       gameStatus: 'playing',
-      hintsRevealed: 0
+      hintsRevealed: 1
     };
   }
   
@@ -53,9 +53,11 @@ export class GameController {
     const sentences = reviewText.split(/[.!?]+\s*/).filter(s => s.trim().length > 0);
     
     for (let i = 0; i < this.state.hintsRevealed && i < sentences.length; i++) {
-      const sentence = sentences[i].trim();
-      const censoredSentence = censorTitle(sentence, this.state.targetGame.title);
-      hints.push(censoredSentence);
+      const sentence = sentences[i]?.trim();
+      if (sentence) {
+        const censoredSentence = censorTitle(sentence, this.state.targetGame.title);
+        hints.push(censoredSentence);
+      }
     }
     
     return hints;
