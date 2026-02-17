@@ -4,311 +4,391 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GuessNES - SNES Game Guessing Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Press Start 2P', monospace;
+      background: #0a0a2e;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 24px 24px;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
+      color: #e0e0ff;
     }
-    
+
+    /* CRT scanline overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.15) 0px,
+        rgba(0, 0, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
     .game-container {
-      background: white;
-      border-radius: 20px;
-      padding: 40px;
-      max-width: 600px;
+      background: #1a1a3e;
+      border: 4px solid #ff00ff;
+      box-shadow:
+        0 0 15px rgba(255, 0, 255, 0.4),
+        0 0 40px rgba(255, 0, 255, 0.15),
+        inset 0 0 30px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      padding: 30px;
+      max-width: 640px;
       width: 100%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
-    
+
     .game-header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
-    
+
     h1 {
-      color: #667eea;
-      font-size: 2.5em;
-      margin-bottom: 10px;
+      color: #00ffcc;
+      font-size: 1.6em;
+      margin-bottom: 12px;
+      text-shadow:
+        0 0 10px rgba(0, 255, 204, 0.7),
+        0 0 30px rgba(0, 255, 204, 0.3);
+      letter-spacing: 4px;
     }
-    
+
     .subtitle {
-      color: #666;
-      font-size: 1em;
+      color: #b0b0d0;
+      font-size: 0.55em;
+      line-height: 1.8;
     }
-    
+
     .game-info {
       display: flex;
-      justify-content: space-between;
+      justify-content: space-around;
       margin-bottom: 20px;
-      padding: 15px;
-      background: #f5f5f5;
-      border-radius: 10px;
+      padding: 12px;
+      background: #12122a;
+      border: 2px solid #6644aa;
+      border-radius: 2px;
     }
-    
+
     .info-item {
       text-align: center;
     }
-    
+
     .info-label {
-      font-size: 0.9em;
-      color: #666;
-      margin-bottom: 5px;
+      font-size: 0.5em;
+      color: #8888bb;
+      margin-bottom: 6px;
     }
-    
+
     .info-value {
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #667eea;
-    }
-    
-    .hints-section {
-      margin-bottom: 25px;
-    }
-    
-    .hints-title {
       font-size: 1.2em;
-      margin-bottom: 10px;
-      color: #333;
+      font-weight: bold;
+      color: #ffcc00;
+      text-shadow: 0 0 8px rgba(255, 204, 0, 0.5);
     }
-    
+
+    .hints-section {
+      margin-bottom: 20px;
+    }
+
+    .hints-title {
+      font-size: 0.7em;
+      margin-bottom: 10px;
+      color: #00ffcc;
+    }
+
     .hint {
-      background: #fff3cd;
+      background: #1e1e44;
       padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      border-left: 4px solid #ffc107;
-      line-height: 1.6;
+      margin-bottom: 8px;
+      border-radius: 2px;
+      border-left: 4px solid #ffcc00;
+      line-height: 2;
+      font-size: 0.55em;
+      color: #d0d0ee;
     }
-    
+
     .no-hints {
-      color: #999;
-      font-style: italic;
+      color: #6666aa;
+      font-size: 0.55em;
       text-align: center;
       padding: 20px;
     }
-    
+
     .guesses-section {
-      margin-bottom: 25px;
+      margin-bottom: 20px;
     }
-    
+
     .guess-item {
-      background: #f8f9fa;
-      padding: 12px;
-      margin-bottom: 8px;
-      border-radius: 8px;
-      border-left: 4px solid #dc3545;
+      background: #1e1e44;
+      padding: 10px 12px;
+      margin-bottom: 6px;
+      border-radius: 2px;
+      border-left: 4px solid #ff4466;
       display: flex;
       align-items: center;
+      font-size: 0.55em;
     }
-    
+
     .guess-number {
       font-weight: bold;
       margin-right: 10px;
-      color: #dc3545;
+      color: #ff4466;
+      text-shadow: 0 0 6px rgba(255, 68, 102, 0.4);
     }
-    
+
     .input-section {
       margin-bottom: 20px;
     }
-    
+
     .input-group {
       display: flex;
-      gap: 10px;
+      gap: 8px;
     }
-    
+
     input[type="text"] {
       flex: 1;
-      padding: 15px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      font-size: 1em;
-      transition: border-color 0.3s;
+      padding: 12px;
+      border: 2px solid #6644aa;
+      border-radius: 2px;
+      font-size: 0.65em;
+      font-family: 'Press Start 2P', monospace;
+      background: #0a0a2e;
+      color: #e0e0ff;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    
+
+    input[type="text"]::placeholder {
+      color: #5555aa;
+    }
+
     input[type="text"]:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #00ffcc;
+      box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
     }
-    
+
     button {
-      padding: 15px 30px;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
+      padding: 12px 20px;
+      background: #6644aa;
+      color: #e0e0ff;
+      border: 2px solid #8866cc;
+      border-radius: 2px;
+      font-size: 0.6em;
+      font-family: 'Press Start 2P', monospace;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.2s, box-shadow 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    
+
     button:hover {
-      background: #5568d3;
+      background: #8866cc;
+      box-shadow: 0 0 12px rgba(136, 102, 204, 0.5);
     }
-    
+
     button:disabled {
-      background: #ccc;
+      background: #2a2a4a;
+      border-color: #3a3a5a;
+      color: #5555aa;
       cursor: not-allowed;
+      box-shadow: none;
     }
-    
+
     .game-over {
       text-align: center;
-      padding: 30px;
-      background: #f8f9fa;
-      border-radius: 10px;
+      padding: 24px;
+      background: #12122a;
+      border: 2px solid #6644aa;
+      border-radius: 2px;
       margin-top: 20px;
     }
-    
+
     .game-over.won {
-      background: #d4edda;
-      border: 2px solid #28a745;
+      background: #0a2a1a;
+      border-color: #00ff88;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
     }
-    
+
     .game-over.lost {
-      background: #f8d7da;
-      border: 2px solid #dc3545;
+      background: #2a0a1a;
+      border-color: #ff4466;
+      box-shadow: 0 0 20px rgba(255, 68, 102, 0.2);
     }
-    
+
     .game-over-title {
-      font-size: 2em;
-      margin-bottom: 15px;
+      font-size: 1.1em;
+      margin-bottom: 12px;
     }
-    
+
     .game-over.won .game-over-title {
-      color: #28a745;
+      color: #00ff88;
+      text-shadow: 0 0 12px rgba(0, 255, 136, 0.5);
     }
-    
+
     .game-over.lost .game-over-title {
-      color: #dc3545;
+      color: #ff4466;
+      text-shadow: 0 0 12px rgba(255, 68, 102, 0.5);
     }
-    
+
+    .game-over > div {
+      font-size: 0.55em;
+      line-height: 1.8;
+    }
+
     .answer {
-      font-size: 1.5em;
+      font-size: 0.75em;
       font-weight: bold;
-      margin: 15px 0;
-      color: #333;
+      margin: 14px 0;
+      color: #ffcc00;
+      text-shadow: 0 0 8px rgba(255, 204, 0, 0.4);
     }
-    
+
     .new-game-btn {
-      margin-top: 20px;
-      background: #28a745;
+      margin-top: 16px;
+      background: #008844;
+      border-color: #00ff88;
     }
-    
+
     .new-game-btn:hover {
-      background: #218838;
+      background: #00aa55;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.4);
     }
-    
+
     .game-info-section {
-      margin-top: 25px;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 10px;
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(10, 10, 46, 0.6);
+      border: 1px solid #6644aa;
+      border-radius: 2px;
       text-align: left;
     }
-    
+
     .review-score {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 15px;
-      font-size: 1.1em;
+      margin-bottom: 12px;
+      font-size: 0.6em;
     }
-    
+
     .score-label {
       font-weight: bold;
-      color: #555;
+      color: #8888bb;
     }
-    
+
     .score-value {
-      font-size: 1.3em;
+      font-size: 1.1em;
       font-weight: bold;
-      padding: 5px 15px;
-      border-radius: 20px;
+      padding: 4px 12px;
+      border-radius: 2px;
+      border: 2px solid;
     }
-    
+
     .score-excellent {
-      background: #28a745;
-      color: white;
+      background: #0a2a1a;
+      color: #00ff88;
+      border-color: #00ff88;
     }
-    
+
     .score-good {
-      background: #ffc107;
-      color: #333;
+      background: #2a2a0a;
+      color: #ffcc00;
+      border-color: #ffcc00;
     }
-    
+
     .score-mixed {
-      background: #6c757d;
-      color: white;
+      background: #1a1a3e;
+      color: #8888bb;
+      border-color: #6644aa;
     }
-    
+
     .game-summary {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
-    
+
     .summary-label {
       font-weight: bold;
-      color: #555;
+      color: #00ffcc;
       margin-bottom: 8px;
-      font-size: 1.05em;
+      font-size: 0.6em;
     }
-    
+
     .game-summary p {
-      line-height: 1.6;
-      color: #333;
-      font-size: 0.95em;
+      line-height: 2;
+      color: #b0b0d0;
+      font-size: 0.5em;
     }
-    
+
     .external-link {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 12px;
     }
-    
+
     .external-link a {
       display: inline-block;
-      padding: 10px 20px;
-      background: #667eea;
-      color: white;
+      padding: 8px 16px;
+      background: #6644aa;
+      color: #e0e0ff;
       text-decoration: none;
-      border-radius: 8px;
-      transition: background 0.3s;
-      font-weight: 500;
+      border: 2px solid #8866cc;
+      border-radius: 2px;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.5em;
+      transition: background 0.2s, box-shadow 0.2s;
     }
-    
+
     .external-link a:hover {
-      background: #5568d3;
+      background: #8866cc;
+      box-shadow: 0 0 12px rgba(136, 102, 204, 0.5);
     }
-    
+
     .loading {
       text-align: center;
       padding: 40px;
-      color: #667eea;
-      font-size: 1.2em;
+      color: #00ffcc;
+      font-size: 0.7em;
+      line-height: 2;
     }
-    
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 16px auto;
+      border: 4px solid #1a1a3e;
+      border-top: 4px solid #00ffcc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
-    }
-    
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #667eea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
     }
   </style>
 </head>
