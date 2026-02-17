@@ -107,11 +107,53 @@ function renderGame() {
       ? `You guessed it in ${guesses.length} ${guesses.length === 1 ? 'try' : 'tries'}!`
       : 'Better luck next time!';
     
+    const game = state.targetGame;
+    
     html += `
       <div class="game-over ${wonClass}">
         <div class="game-over-title">${title}</div>
         <div>${message}</div>
         <div class="answer">The answer was: <strong>${gameController.getAnswer()}</strong></div>
+    `;
+    
+    // Add game information if available
+    if (game.reviewScore || game.summary || game.externalLink) {
+      html += '<div class="game-info-section">';
+      
+      if (game.reviewScore) {
+        const scoreClass = game.reviewScore >= 90 ? 'score-excellent' : 
+                          game.reviewScore >= 75 ? 'score-good' : 'score-mixed';
+        html += `
+          <div class="review-score">
+            <span class="score-label">Review Score:</span>
+            <span class="score-value ${scoreClass}">${game.reviewScore}/100</span>
+          </div>
+        `;
+      }
+      
+      if (game.summary) {
+        html += `
+          <div class="game-summary">
+            <div class="summary-label">About this game:</div>
+            <p>${game.summary}</p>
+          </div>
+        `;
+      }
+      
+      if (game.externalLink) {
+        html += `
+          <div class="external-link">
+            <a href="${game.externalLink}" target="_blank" rel="noopener noreferrer">
+              📖 Learn More
+            </a>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+    }
+    
+    html += `
         <button class="new-game-btn" onclick="window.location.reload()">🔄 Play Again</button>
       </div>
     `;
